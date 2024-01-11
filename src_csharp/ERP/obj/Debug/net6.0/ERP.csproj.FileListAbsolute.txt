@@ -21,3 +21,14 @@ D:\ERP\src_csharp\ERP\obj\Debug\net6.0\ERP.csproj.CoreCompileInputs.cache
 D:\ERP\src_csharp\ERP\obj\Debug\net6.0\ERP.dll
 D:\ERP\src_csharp\ERP\obj\Debug\net6.0\refint\ERP.dll
 D:\ERP\src_csharp\ERP\obj\Debug\net6.0\ERP.pdb
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\ERP.exe
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\ERP.deps.json
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\ERP.runtimeconfig.json
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\ERP.dll
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\ERP.pdb
+D:\ERP\src_csharp\ERP\obj\Debug\net6.0\ERP.genruntimeconfig.cache
+D:\ERP\src_csharp\ERP\obj\Debug\net6.0\ref\ERP.dll
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\Microsoft.Extensions.Logging.Abstractions.dll
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\MySqlConnector.dll
+D:\ERP\src_csharp\ERP\bin\Debug\net6.0\System.Diagnostics.DiagnosticSource.dll
+D:\ERP\src_csharp\ERP\obj\Debug\net6.0\ERP.csproj.CopyComplete

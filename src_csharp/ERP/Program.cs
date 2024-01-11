@@ -1,6 +1,9 @@
-﻿using System;
+﻿
 using System.IO;
 using System.Collections.Generic;
+using MySqlConnector;
+using System.Security.Cryptography;
+using System.Text;
 
 Console.CursorVisible = false;
 
@@ -23,7 +26,7 @@ void MainMenu()
     ConsoleKeyInfo fléches;
     bool selection = false;
 
- 
+
 
 
     //TITLE
@@ -82,12 +85,12 @@ void MainMenu()
 
 
 
-    
+
     string Menu = (@"
     ╔════════════════════════════════════════════════════════════════════════╗
     ║ ┌────────────────────────────────────────────────────────────────────┐ ║ 
     ║                                                                        ║
-    ║                                Clients                                 ║
+    ║                                clients                                 ║
     ║                                                                        ║
     ║                               Produits                                 ║
     ║                                                                        ║
@@ -101,7 +104,7 @@ void MainMenu()
     string[] SlitMenu = Menu.Split("\n");
 
     //isoler les lignes sans les symboles ne debut et fin
-    string l4 = "                             Clients                              ";
+    string l4 = "                             clients                              ";
     string l6 = "                            Produits                              ";
     string l8 = "                            Commandes                             ";
     string l10 = "                             Quitter                                ";
@@ -124,7 +127,7 @@ void MainMenu()
 
         fléches = Console.ReadKey(true);
 
-        // Effacer le fond décoré de l'option actuelle
+        //Effacer le fond décoré de l'option actuelle
         Console.SetCursorPosition(initialposX, posmin + (OptionMainMenuSelected - 1) * 2);
         Console.WriteLine($" \x1b[38;5;230m{LignesOptions(OptionMainMenuSelected)} ");
 
@@ -146,7 +149,7 @@ void MainMenu()
         }
     }
     //Attribuer un nombre pour chaque lignes d'option pour ensuit pouvoir associer le nombre avec OPTION
-    // Case 1 renvoie au contnue de l4...
+    //Case 1 renvoie au contnue de l4...
     string LignesOptions(int option)
     {
         switch (option)
@@ -165,23 +168,115 @@ void MainMenu()
     }
 }
 
-//CLIENT
-if (OptionMainMenuSelected ==1)
+//clients
+if (OptionMainMenuSelected == 1)
 {
-    string dded(string modif)
-    {
-        
-        string {(modif)};
-    }
 
-    string CsvFile = @"D:\PHP\ERP\doc\us-500(1).csv";
-    var delimiters = new string[] { "\",\"", "\",", ",\""  };
-    
+    string creatTableDB = @"CREATE TABLE IF NOT EXISTS clients
+    (
+        idClient INT PRIMARY KEY AUTO_INCREMENT,
+        CliUsername VARCHAR(103) NULL,
+        CliPassword VARCHAR(200) NULL,
+        CliFirstName VARCHAR(255) NULL,
+        CliLastName VARCHAR(255) NULL,
+        CliCompanyName VARCHAR(255) NULL,
+        CliAddress VARCHAR(255) NULL,
+        CliCity VARCHAR(255) NULL,
+        CliLocality VARCHAR(255) NULL,
+        CliCountry VARCHAR(255) NULL,
+        CliZip VARCHAR(20) NULL,
+        CliPhoneFirst VARCHAR(20) NULL,
+        CliPhoneSecond VARCHAR(20) NULL,
+        CliEmail VARCHAR(255) NULL,
+        CliWeb VARCHAR(255) NULL
+    )";
+
+    SQLCommand(creatTableDB);
+
+    listenCsv();
+}
+
+#region Client
+void listenCsv ()
+{
+    var username = "";
+    var password = "";
+    var first_name = "";
+    var last_name = "";
+    var compagny_name = "";
+    var address = "";
+    var city = "";
+    var Locality = "";
+    var Country = "";
+    var zip = "";
+    var phone_1 = "";
+    var phone_2 = "";
+    var email = "";
+    var web = "";
+
+    string CsvFile = @"D:\ERP\doc\Clients-Clean-Id(2).csv";
+
     foreach (string line in File.ReadAllLines(CsvFile))
     {
-        var colunns = line.Split(delimiters, StringSplitOptions.None);
-        
+        string UploadTableSql = $@"
+            INSERT INTO clients (CliUsername, CliPassword, CliFirstName, CliLastName, CliCompanyName, CliAddress, CliCity, CliLocality, CliCountry, CliZip, CliPhoneFirst, CliPhoneSecond, CliEmail, CliWeb)
+            VALUES ('{username}', '{password}', '{first_name}', '{last_name}', '{compagny_name}', '{address}', '{city}', '{Locality}', '{Country}', '{zip}', '{phone_1}', '{phone_2}', '{email}', '{web}');
+        ";
 
+        var colunns = line.Split(";");
+
+        first_name = colunns[1];
+        last_name = colunns[2];
+
+        username = (first_name.Length >= 3) ? first_name.Substring(0, 3) + last_name : first_name + last_name;
+        password = sha256(random());
+        
+        compagny_name = colunns[3];
+        address = colunns[4];
+        city = colunns[5];
+        Locality = colunns[6];
+        Country = colunns[7];
+        zip = colunns[8];
+        phone_1 = colunns[9];
+        phone_2 = colunns[10];
+        email = colunns[11];
+        web = colunns[12];
+        
+        SQLCommand(UploadTableSql);
     }
-    
 }
+
+static string sha256(string input)
+{
+    using (var hashGenerator = SHA256.Create())
+    {
+        var hash = hashGenerator.ComputeHash(Encoding.Default.GetBytes(input));
+        return BitConverter.ToString(hash);
+    }
+}
+string random()
+{
+    string generatedChar = "";
+    Random random = new Random();
+    for (int i = 0; i < 12; i++)
+    {
+        char Char = Convert.ToChar(random.Next(1, 127));
+        generatedChar = generatedChar + Char;
+    }
+    return generatedChar;
+}
+
+void SQLCommand(string commandSql)
+{
+    using (MySqlConnection connection = new MySqlConnection("server=localhost;userid=root;password=root;database=db_clients_erp;port=6033"))
+    {
+        connection.Open();
+
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandText = commandSql;
+            command.ExecuteNonQuery();
+        }
+    }    
+}
+#endregion
