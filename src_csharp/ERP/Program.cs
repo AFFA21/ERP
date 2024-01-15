@@ -7,13 +7,52 @@ using System.Text;
 
 Console.CursorVisible = false;
 
-
-
 int OptionMainMenuSelected = 1;
+int OptionMainMenuSelected2 = 1;
+//string NameOfTable;
+
 
 MainMenu();
 
+if (OptionMainMenuSelected == 1)
+{
+    ClientsMenu2();
 
+    if (OptionMainMenuSelected2 == 1)
+    {
+        //Console.SetCursorPosition(Console.WindowWidth/2 -30, Console.WindowHeight/2);
+        //Console.Write("Entrer le nom de la table : ");
+        //NameOfTable = Console.ReadLine();
+
+        string creatTableDB = @"CREATE TABLE IF NOT EXISTS clients
+        (
+            idClient INT PRIMARY KEY AUTO_INCREMENT,
+            CliUsername VARCHAR(103) NULL,
+            CliPassword VARCHAR(200) NULL,
+            CliFirstName VARCHAR(255) NULL,
+            CliLastName VARCHAR(255) NULL,
+            CliCompanyName VARCHAR(255) NULL,
+            CliAddress VARCHAR(255) NULL,
+            CliCity VARCHAR(255) NULL,
+            CliLocality VARCHAR(255) NULL,
+            CliCountry VARCHAR(255) NULL,
+            CliZip VARCHAR(20) NULL,
+            CliPhoneFirst VARCHAR(20) NULL,
+            CliPhoneSecond VARCHAR(20) NULL,
+            CliEmail VARCHAR(255) NULL,
+            CliWeb VARCHAR(255) NULL
+        )";
+
+        SQLCommand(creatTableDB);
+
+        listenCsv();
+
+    }
+    else if (OptionMainMenuSelected == 2)
+    {
+        
+    }
+}
 
 
 void MainMenu()
@@ -25,7 +64,7 @@ void MainMenu()
     var FondVert = "\u001b[42m";
     ConsoleKeyInfo fléches;
     bool selection = false;
-
+    OptionMainMenuSelected = 1;
 
 
 
@@ -81,10 +120,6 @@ void MainMenu()
     }
     Console.Clear();
     Console.ResetColor();
-
-
-
-
 
     string Menu = (@"
     ╔════════════════════════════════════════════════════════════════════════╗
@@ -169,51 +204,112 @@ void MainMenu()
 }
 
 //clients
-if (OptionMainMenuSelected == 1)
-{
+#region Client
+void ClientsMenu2()
+{ 
+    int initialposX = 4;
+    int initialposY = 0;
+    int posmin = 12;
+    var FondVert = "\u001b[42m";
+    ConsoleKeyInfo fléches;
+    bool selection = false;
+    OptionMainMenuSelected = 1;
 
-    string creatTableDB = @"CREATE TABLE IF NOT EXISTS clients
-    (
-        idClient INT PRIMARY KEY AUTO_INCREMENT,
-        CliUsername VARCHAR(103) NULL,
-        CliPassword VARCHAR(200) NULL,
-        CliFirstName VARCHAR(255) NULL,
-        CliLastName VARCHAR(255) NULL,
-        CliCompanyName VARCHAR(255) NULL,
-        CliAddress VARCHAR(255) NULL,
-        CliCity VARCHAR(255) NULL,
-        CliLocality VARCHAR(255) NULL,
-        CliCountry VARCHAR(255) NULL,
-        CliZip VARCHAR(20) NULL,
-        CliPhoneFirst VARCHAR(20) NULL,
-        CliPhoneSecond VARCHAR(20) NULL,
-        CliEmail VARCHAR(255) NULL,
-        CliWeb VARCHAR(255) NULL
-    )";
+    string Menu = (@"
+        ╔════════════════════════════════════════════════════════════════════════╗
+        ║ ┌────────────────────────────────────────────────────────────────────┐ ║ 
+        ║                                                                        ║
+        ║                             Créer la table                             ║
+        ║                                                                        ║
+        ║                              Update table                              ║
+        ║                                                                        ║
+        ║                                Quitter                                 ║
+        ║                                                                        ║
+        ║ └────────────────────────────────────────────────────────────────────┘ ║
+        ╚════════════════════════════════════════════════════════════════════════╝
+        ");
+    string[] SlitMenu = Menu.Split("\n");
 
-    SQLCommand(creatTableDB);
+    //isoler les lignes sans les symboles ne debut et fin
+    string l4 = "                          Créer la table                          ";
+    string l6 = "                           Update table                           ";
+    string l8 = "                             Quitter                              ";
 
-    listenCsv();
+    //écrire le tableau en entier
+    for (int i = 0; i < SlitMenu.Length; i++)
+    {
+        Console.SetCursorPosition((Console.WindowWidth - SlitMenu[i].Length) / 2, Console.WindowHeight / 2 - 7 + i);
+        if (i == 3) { initialposX = Console.CursorLeft + 11; initialposY = Console.CursorTop + 7; }
+        Console.WriteLine($"\x1b[38;5;230m{SlitMenu[i]}");
+    }
+
+    Console.SetCursorPosition(initialposX, initialposY);
+
+    selection = false;
+    while (!selection)
+    {
+        Console.SetCursorPosition(initialposX , posmin + (OptionMainMenuSelected2 - 1) * 2);
+        Console.WriteLine($"{FondVert} \x1b[38;5;230m{LignesOptions(OptionMainMenuSelected2)} \u001b[0m");
+
+        fléches = Console.ReadKey(true);
+
+        //Effacer le fond décoré de l'option actuelle
+        Console.SetCursorPosition(initialposX, posmin + (OptionMainMenuSelected2 - 1) * 2);
+        Console.WriteLine($" \x1b[38;5;230m{LignesOptions(OptionMainMenuSelected2)} ");
+
+        //Fléche haut - féche bas + et Enter suivant
+        switch (fléches.Key)
+        {
+            case ConsoleKey.UpArrow:
+                OptionMainMenuSelected2 = OptionMainMenuSelected2 == 1 ? 3 : OptionMainMenuSelected2 - 1;
+                break;
+
+            case ConsoleKey.DownArrow:
+                OptionMainMenuSelected2 = OptionMainMenuSelected2 == 3 ? 1 : OptionMainMenuSelected2 + 1;
+                break;
+
+            case ConsoleKey.Enter:
+                selection = true;
+                Console.Clear();
+                break;
+        }
+    }
+    //Attribuer un nombre pour chaque lignes d'option pour ensuit pouvoir associer le nombre avec OPTION
+    //Case 1 renvoie au contnue de l4...
+    string LignesOptions(int option)
+    {
+        switch (option)
+        {
+            case 1:
+                return l4;
+            case 2:
+                return l6;
+            case 3:
+                return l8;
+            default:
+                return "";
+        }
+    }
 }
 
-#region Client
+var username = "";
+var password = "";
+var first_name = "";
+var last_name = "";
+var compagny_name = "";
+var address = "";
+var city = "";
+var Locality = "";
+var Country = "";
+var zip = "";
+var phone_1 = "";
+var phone_2 = "";
+var email = "";
+var web = "";
+
 void listenCsv ()
 {
-    var username = "";
-    var password = "";
-    var first_name = "";
-    var last_name = "";
-    var compagny_name = "";
-    var address = "";
-    var city = "";
-    var Locality = "";
-    var Country = "";
-    var zip = "";
-    var phone_1 = "";
-    var phone_2 = "";
-    var email = "";
-    var web = "";
-
+    
     string CsvFile = @"D:\ERP\doc\Clients-Clean-Id(2).csv";
 
     foreach (string line in File.ReadAllLines(CsvFile))
@@ -279,4 +375,30 @@ void SQLCommand(string commandSql)
         }
     }    
 }
+
+void updateTheData()
+{
+    string CsvFile = @"D:\ERP\doc\Clients-Clean-Id(2).csv";
+    //string username = "jjj";
+    int count = 1;
+    foreach (string line in File.ReadAllLines(CsvFile))
+    {
+
+        string UploadTableSql = $@"UPDATE clients SET CliFirstName = {first_name} WHERE idClient = {count++} AND CliFirstName != {first_name};";
+
+        SQLCommand(UploadTableSql);
+    }
+}
+
+
+
+
+
+
+
+
+//SELECT * FROM clients WHERE CliUsername != $"{username}" UPDATE {username}
+//string UpdateTableSql = $@"
+//CompareAndUpdateDatabase(csvData, sqliteConnectionString);"
+
 #endregion
